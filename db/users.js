@@ -27,14 +27,24 @@ async function getUser({ username, password }) {
     `, [username, password]);
 
     return user;
-
   } catch (error) {
     throw error;
   }
 }
 
 async function getUserById(userId) {
+  console.log(userId);
+  try {
+    const { rows: [user] } = await client.query(`
+    SELECT *
+    FROM users
+    WHERE id=${userId}
+  `);
 
+    return user;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getUserByUsername(userName) {
