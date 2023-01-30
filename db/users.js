@@ -33,15 +33,14 @@ async function getUser({ username, password }) {
 }
 
 async function getUserById(userId) {
-  console.log(userId);
   try {
-    const { rows: [user] } = await client.query(`
-    SELECT *
+    const { rows: user } = await client.query(`
+    SELECT id, username
     FROM users
-    WHERE id=${userId}
-  `);
+    WHERE id=$1
+  `, [userId]);
+  return user;
 
-    return user;
   } catch (error) {
     throw error;
   }
