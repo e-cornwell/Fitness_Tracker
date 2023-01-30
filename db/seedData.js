@@ -3,13 +3,34 @@
 const client = require("./client")
 
 async function dropTables() {
-  console.log("Dropping All Tables...")
   // drop all tables, in the correct order
+  try {
+    console.log("Dropping All Tables...")
+    await client.query(`
+      DROP TABLE IF EXISTS users;
+    `)
+  } catch (error) {
+    console.error('Error while dropping tables!');
+  }
 }
 
 async function createTables() {
-  console.log("Starting to build tables...")
+  
   // create all tables, in the correct order
+  try {
+    console.log("Starting to build tables...")
+
+    await client.query(`
+      CREATE TABLE users (
+      id SERIAL PRIMARY KEY,
+      username varchar(255) UNIQUE NOT NULL,
+      password varchar(255) NOT NULL
+      );
+    `);
+  } catch (error) {
+    console.error("Error building tables!");
+    throw error;
+  }
 }
 
 /* 
