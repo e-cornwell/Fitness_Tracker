@@ -8,7 +8,10 @@ async function dropTables() {
   try {
     console.log("Dropping All Tables...")
     await client.query(`
-      DROP TABLE IF EXISTS users;
+      DROP TABLE IF EXISTS routine_activities cascade;
+      DROP TABLE IF EXISTS routines cascade;
+      DROP TABLE IF EXISTS users cascade;
+      DROP TABLE IF EXISTS activities cascade;
     `);
     
   } catch (error) {
@@ -26,6 +29,35 @@ async function createTables() {
       id SERIAL PRIMARY KEY,
       username varchar(255) UNIQUE NOT NULL,
       password varchar(255) NOT NULL
+      );
+    `);
+
+    await client.query(`
+      CREATE TABLE activities (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) UNIQUE NOT NULL,
+        description	TEXT NOT NULL
+      );
+    `);
+
+    await client.query(`
+      CREATE TABLE routines (
+        id SERIAL PRIMARY KEY,
+        "creatorId" INTEGER REFERENCES users(id),
+        "isPublic" BOOLEAN DEFAULT false,
+        name VARCHAR(255) UNIQUE NOT NULL, 
+        goal TEXT NOT NULL
+      );
+    `);
+
+    //Added unique to lines 57 and 58. The only place 'Unique' would work without syntax error.
+    await client.query(`
+      CREATE TABLE routine_activities (
+        id SERIAL PRIMARY KEY,
+        "routineId" UNIQUE INTEGER REFERENCES routines ( id ), 
+        "activityId" UNIQUE INTEGER REFERENCES activities ( id ),
+        duration INTEGER, 
+        count INTEGER
       );
     `);
 

@@ -5,7 +5,20 @@ async function addActivityToRoutine({
   activityId,
   count,
   duration,
-}) {}
+}) {
+  try {
+    const { rows: [routineActivity] } = await client.query(`
+      SELECT name, description
+      FROM activities
+      JOIN routines
+      ON routines.id = activities.id
+    `, [routineId, activityId, count, duration])
+
+    return routineActivity;
+  } catch (error) {
+    throw error
+  }
+}
 
 async function getRoutineActivityById(id) {}
 
