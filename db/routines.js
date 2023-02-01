@@ -16,7 +16,14 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
 
 async function getRoutineById(id) {}
 
-async function getRoutinesWithoutActivities() {}
+async function getRoutinesWithoutActivities() {
+  try {
+
+  } catch (error) {
+    throw error;
+  }
+
+}
 
 async function getAllRoutines() {}
 

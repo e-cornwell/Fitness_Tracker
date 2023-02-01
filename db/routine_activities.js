@@ -8,10 +8,10 @@ async function addActivityToRoutine({
 }) {
   try {
     const { rows: [routineActivity] } = await client.query(`
-      SELECT routines.id, activities.id as "activityId", count, duration
+      SELECT routines.id, activities.id, count, duration
       FROM activities
       RIGHT JOIN routines
-      ON activities."id" = routines.id
+      ON activities."routineId" = routines.id
     `, [routineId, activityId, count, duration])
 
     return routineActivity;
