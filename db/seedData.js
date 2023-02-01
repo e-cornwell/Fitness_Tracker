@@ -1,5 +1,5 @@
 // require in the database adapter functions as you write them (createUser, createActivity...)
-const { createUser, createActivity } = require('./');
+const { createUser, createActivity, createRoutine, addActivityToRoutine } = require('./');
 
 const client = require("./client")
 
@@ -8,10 +8,10 @@ async function dropTables() {
   try {
     console.log("Dropping All Tables...")
     await client.query(`
-      DROP TABLE IF EXISTS routine_activities cascade;
-      DROP TABLE IF EXISTS routines cascade;
       DROP TABLE IF EXISTS users cascade;
       DROP TABLE IF EXISTS activities cascade;
+      DROP TABLE IF EXISTS routines cascade;
+      DROP TABLE IF EXISTS routine_activities cascade;
     `);
     
   } catch (error) {
@@ -26,7 +26,7 @@ async function createTables() {
 
     await client.query(`
       CREATE TABLE users (
-      id SERIAL PRIMARY KEY,
+      id SERIAL PRIMARY KEY UNIQUE NOT NULL,
       username varchar(255) UNIQUE NOT NULL,
       password varchar(255) NOT NULL
       );
@@ -34,7 +34,7 @@ async function createTables() {
 
     await client.query(`
       CREATE TABLE activities (
-        id SERIAL PRIMARY KEY,
+        id SERIAL PRIMARY KEY UNIQUE NOT NULL,
         name VARCHAR(255) UNIQUE NOT NULL,
         description	TEXT NOT NULL
       );
@@ -42,7 +42,7 @@ async function createTables() {
 
     await client.query(`
       CREATE TABLE routines (
-        id SERIAL PRIMARY KEY,
+        id SERIAL PRIMARY KEY UNIQUE NOT NULL,
         "creatorId" INTEGER REFERENCES users(id),
         "isPublic" BOOLEAN DEFAULT false,
         name VARCHAR(255) UNIQUE NOT NULL, 
@@ -50,12 +50,13 @@ async function createTables() {
       );
     `);
 
-    //Added unique to lines 57 and 58. The only place 'Unique' would work without syntax error.
+    //Need to somehow add unique to lines 57 and 58. Unable to find correct syntax, Used example from Juicebox seed.js line 63
     await client.query(`
       CREATE TABLE routine_activities (
         id SERIAL PRIMARY KEY,
-        "routineId" UNIQUE INTEGER REFERENCES routines ( id ), 
-        "activityId" UNIQUE INTEGER REFERENCES activities ( id ),
+        "routineId" INTEGER REFERENCES routines ( id ), 
+        "activityId" INTEGER REFERENCES activities ( id ),
+        UNIQUE ("routineId", "activityId"),
         duration INTEGER, 
         count INTEGER
       );
