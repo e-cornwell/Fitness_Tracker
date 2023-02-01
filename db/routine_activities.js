@@ -8,11 +8,11 @@ async function addActivityToRoutine({
 }) {
   try {
     const { rows: [routineActivity] } = await client.query(`
-      SELECT routines.id, activities.id, count, duration
-      FROM activities
-      RIGHT JOIN routines
-      ON activities."routineId" = routines.id
-    `, [routineId, activityId, count, duration])
+      INSERT INTO routine_activities ("routineId", "activityId", count, duration) 
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT ("routineId", "activityId") DO NOTHING
+      RETURNING *;
+    `, [routineId, activityId, count, duration]);
 
     return routineActivity;
   } catch (error) {
