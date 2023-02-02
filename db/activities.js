@@ -61,15 +61,21 @@ async function attachActivitiesToRoutines(routines) {
   // select and return an array of all activities
 }
 
-async function updateActivity({ id, name, description }) {
+async function updateActivity({id, ...fields}) {
   // don't try to update the id
   // do update the name and description
   // return the updated activity
+  const setFields = Object.keys(fields).map(
+    (key, index) => `"${ key }"=$${ index + 1 }`
+    ).join(', ');
+    
   try {
     const { rows: [activity] } = await client.query(`
       UPDATE activities
+      SET ${setFields}
+      WHERE id=${ id }
       RETURNING *;
-    `, [id, name, description]); //COULDNT GET THIS WORKING :(
+    `, Object.values(fields));
 
     return activity;
   } catch (error) {
