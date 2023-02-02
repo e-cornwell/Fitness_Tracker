@@ -18,7 +18,16 @@ async function getRoutineById(id) {}
 
 async function getRoutinesWithoutActivities() {
   try {
-
+    const { rows: routines } = await client.query(`
+      SELECT *
+      FROM routines
+    `)
+    const withoutActivities = routines.map( routine => {
+      if(!routine.activities){
+        return routine;
+      }
+    })
+    return withoutActivities;
   } catch (error) {
     throw error;
   }
