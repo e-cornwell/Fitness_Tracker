@@ -61,10 +61,20 @@ async function attachActivitiesToRoutines(routines) {
   // select and return an array of all activities
 }
 
-async function updateActivity({ id, ...fields }) {
+async function updateActivity({ id, name, description }) {
   // don't try to update the id
   // do update the name and description
   // return the updated activity
+  try {
+    const { rows: [activity] } = await client.query(`
+      UPDATE activities
+      RETURNING *;
+    `, [id, name, description]); //COULDNT GET THIS WORKING :(
+
+    return activity;
+  } catch (error) {
+    throw error;
+  }
 }
 
 module.exports = {

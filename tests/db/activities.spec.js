@@ -60,7 +60,7 @@ describe("DB Activities", () => {
   });
 
   describe("updateActivity", () => {
-    xit("Updates name without affecting the ID. Returns the updated Activity.", async () => {
+    it("Updates name without affecting the ID. Returns the updated Activity.", async () => {
       const fakeActivity = await createFakeActivity(
         "Baseball",
         "Run the bases"
