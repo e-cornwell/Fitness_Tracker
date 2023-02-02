@@ -57,6 +57,8 @@ async function getActivityByName(name) {
   }
 }
 
+
+//HELPER FUNCTION TO BE USED INSIDE OF GETALLREPORTS*
 async function attachActivitiesToRoutines(routines) {
   // select and return an array of all activities
 }
