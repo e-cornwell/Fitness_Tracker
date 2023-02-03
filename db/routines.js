@@ -8,8 +8,9 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
       VALUES($1, $2, $3, $4)
       RETURNING *
       `, [creatorId, isPublic, name, goal])
-
+    
     return routine;
+    
   } catch (error) {
     throw error;
   }
@@ -36,7 +37,7 @@ async function getAllRoutines() {
     const { rows } = await client.query(`
     SELECT routines.*, count, duration, activities.name as "activityName",
     routine_activities.id AS "routineActivityId", activities.id AS "activityId",
-    description, username AS "creatorName" 
+    description, username AS "creatorName"
     FROM routines
       JOIN routine_activities ON routines.id = routine_activities."routineId"
       JOIN activities ON activities.id = routine_activities."activityId"
@@ -52,7 +53,23 @@ async function getAllRoutines() {
 }
 
 async function getAllPublicRoutines() {
-
+  try {
+    const { rows } = await client.query(`
+    SELECT routines.*, count, duration, activities.name as "activityName",
+    routine_activities.id AS "routineActivityId", activities.id AS "activityId",
+    description, username AS "creatorName"
+    FROM routines
+      JOIN routine_activities ON routines.id = routine_activities."routineId"
+      JOIN activities ON activities.id = routine_activities."activityId"
+      JOIN users ON routines."creatorId" = users.id
+    `)
+    let routines = attachActivitiesToRoutines(rows);
+    routines = Object.values(routines);
+    
+    return routines;
+  } catch (error) {
+    throw error
+  }
 }
 
 async function getAllRoutinesByUser({ username }) {
