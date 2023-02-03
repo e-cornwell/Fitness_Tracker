@@ -20,13 +20,23 @@ async function getRoutineById(id) {
 }
 
 async function getRoutinesWithoutActivities() {
- 
+ try {
+  const { rows } = await client.query(`
+    SELECT *
+    FROM routines
+  `)
+  return rows;
+ } catch (error) {
+  throw error;
+ }
 }
 
 async function getAllRoutines() {
   try {
     const { rows } = await client.query(`
-    SELECT routines.*, count, duration, activities.name as "activityName", routine_activities.id AS "routineActivityId", activities.id AS "activityId", description, username AS "creatorName" 
+    SELECT routines.*, count, duration, activities.name as "activityName",
+    routine_activities.id AS "routineActivityId", activities.id AS "activityId",
+    description, username AS "creatorName" 
     FROM routines
       JOIN routine_activities ON routines.id = routine_activities."routineId"
       JOIN activities ON activities.id = routine_activities."activityId"
@@ -34,7 +44,7 @@ async function getAllRoutines() {
     `)
     let routines = attachActivitiesToRoutines(rows);
     routines = Object.values(routines);
-    console.log(rows);
+    
     return routines;
   } catch (error) {
     throw error
