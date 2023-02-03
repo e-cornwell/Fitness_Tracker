@@ -86,11 +86,31 @@ async function getAllRoutinesByUser({ username }) {
 }
 
 async function getPublicRoutinesByUser({ username }) {
-
+  try {
+    const { rows } = await client.query(`
+    ${allRoutines}
+    WHERE username = $1 AND "isPublic" = true;
+    `, [username])
+    let routines = attachActivitiesToRoutines(rows);
+    routines = Object.values(routines);
+    return routines;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getPublicRoutinesByActivity({ id }) {
-
+  try {
+    const { rows } = await client.query(`
+    ${allRoutines}
+    WHERE "activityId" = $1 AND "isPublic" = true;
+    `, [id])
+    let routines = attachActivitiesToRoutines(rows);
+    routines = Object.values(routines);
+    return routines;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function updateRoutine({ id, ...fields }) {
