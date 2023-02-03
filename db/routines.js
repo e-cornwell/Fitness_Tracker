@@ -1,6 +1,14 @@
 const { attachActivitiesToRoutines } = require("./activities");
 const client = require("./client");
 
+const allRoutines = `
+SELECT routines.*, count, duration, activities.name as "activityName", activities.id as "activityId", description, username as "creatorName",routine_activities.id AS "routineActivityId"
+FROM routines
+JOIN routine_activities ON routines.id = routine_activities."routineId"
+JOIN activities ON activities.id = routine_activities."activityId"
+JOIN users ON "creatorId" = users.id
+`;
+
 async function createRoutine({ creatorId, isPublic, name, goal }) {
   try {
     const { rows: [routine] } = await client.query(`
@@ -34,15 +42,7 @@ async function getRoutinesWithoutActivities() {
 
 async function getAllRoutines() {
   try {
-    const { rows } = await client.query(`
-    SELECT routines.*, count, duration, activities.name as "activityName",
-    routine_activities.id AS "routineActivityId", activities.id AS "activityId",
-    description, username AS "creatorName"
-    FROM routines
-      JOIN routine_activities ON routines.id = routine_activities."routineId"
-      JOIN activities ON activities.id = routine_activities."activityId"
-      JOIN users ON routines."creatorId" = users.id
-    `)
+    const { rows } = await client.query(allRoutines)
     let routines = attachActivitiesToRoutines(rows);
     routines = Object.values(routines);
     
@@ -55,14 +55,10 @@ async function getAllRoutines() {
 async function getAllPublicRoutines() {
   try {
     const { rows } = await client.query(`
-    SELECT routines.*, count, duration, activities.name as "activityName",
-    routine_activities.id AS "routineActivityId", activities.id AS "activityId",
-    description, username AS "creatorName"
-    FROM routines
-      JOIN routine_activities ON routines.id = routine_activities."routineId"
-      JOIN activities ON activities.id = routine_activities."activityId"
-      JOIN users ON routines."creatorId" = users.id
+    ${allRoutines}
+    WHERE "isPublic" = true;
     `)
+    
     let routines = attachActivitiesToRoutines(rows);
     routines = Object.values(routines);
     return routines.filter(routine => {
@@ -76,7 +72,17 @@ async function getAllPublicRoutines() {
 }
 
 async function getAllRoutinesByUser({ username }) {
-
+  try {
+    const { rows } = await client.query(`
+      ${allRoutines}
+      WHERE username = $1
+    `, [username]);
+    let routines = attachActivitiesToRoutines(rows);
+    routines = Object.values(routines);
+    return routines;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getPublicRoutinesByUser({ username }) {
