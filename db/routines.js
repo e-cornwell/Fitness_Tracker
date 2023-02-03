@@ -65,10 +65,13 @@ async function getAllPublicRoutines() {
     `)
     let routines = attachActivitiesToRoutines(rows);
     routines = Object.values(routines);
-    
-    return routines;
+    return routines.filter(routine => {
+      if(routine.isPublic){
+        return routine;
+      };
+    });
   } catch (error) {
-    throw error
+    throw error;
   }
 }
 
