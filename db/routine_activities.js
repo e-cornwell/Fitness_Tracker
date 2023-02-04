@@ -83,7 +83,14 @@ try {
 
 async function canEditRoutineActivity(routineActivityId, userId) {
   try {
-    return;
+    const { rows: [ editRoutine ] } = await client.query(`
+      SELECT routine_activities.*, routines."creatorId"
+      FROM routines
+      JOIN routine_activities ON routines.id = routine_activities."routineId"
+      WHERE routine_activities.id = $1
+    `, [routineActivityId]);
+
+    return editRoutine.creatorId === userId;
   } catch (error) {
     throw error;
   }
