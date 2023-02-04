@@ -24,8 +24,17 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
   }
 }
 
+//When is this used? This function is not tested. 
 async function getRoutineById(id) {
-
+  try {
+    const { rows: [routine] } = await client.query(`
+      SELECT * FROM routines
+      WHERE id = $1
+    `, [id])
+    return routine;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getRoutinesWithoutActivities() {
@@ -143,9 +152,7 @@ async function destroyRoutine(id) {
       DELETE FROM routines
       WHERE id = $1
     `, [id])
-
     
-
     return routine, routineActivities
   } catch (error) {
     throw(error)

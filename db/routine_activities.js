@@ -34,7 +34,9 @@ async function getRoutineActivityById(id) {
 
 }
 
-async function getRoutineActivitiesByRoutine({ id }) {}
+async function getRoutineActivitiesByRoutine({ id }) {
+  
+}
 
 async function updateRoutineActivity({ id, ...fields }) {}
 
