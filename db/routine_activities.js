@@ -82,7 +82,11 @@ try {
 }
 
 async function canEditRoutineActivity(routineActivityId, userId) {
-  
+  try {
+    return;
+  } catch (error) {
+    throw error;
+  }
 }
 
 module.exports = {
