@@ -69,10 +69,21 @@ async function updateRoutineActivity({ id, ...fields }) {
 }
 
 async function destroyRoutineActivity(id) {
-
+try {
+  const { rows: [routineActivity] } = await client.query(`
+    DELETE FROM routine_activities
+    WHERE "routineId"=${ id }
+    RETURNING *
+    `)
+  return routineActivity;
+} catch (error) {
+  throw error;
+}
 }
 
-async function canEditRoutineActivity(routineActivityId, userId) {}
+async function canEditRoutineActivity(routineActivityId, userId) {
+  
+}
 
 module.exports = {
   getRoutineActivityById,

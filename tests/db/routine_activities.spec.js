@@ -126,7 +126,7 @@ describe("DB Routine Activities", () => {
   });
 
   describe("canEditRoutineActivity", () => {
-    xit("should return true if routine activity can be edited by user", async () => {
+    it("should return true if routine activity can be edited by user", async () => {
       const fakeUser = await createFakeUser("Jay");
       const fakeRoutine = await createFakePublicRoutine(
         fakeUser.id,
