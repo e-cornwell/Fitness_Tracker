@@ -35,7 +35,17 @@ async function getRoutineActivityById(id) {
 }
 
 async function getRoutineActivitiesByRoutine({ id }) {
-  
+  try {
+    const { rows: activities } = await client.query(`
+      SELECT *
+      FROM routine_activities
+      WHERE "routineId"=${ id }
+    `);
+
+    return activities;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function updateRoutineActivity({ id, ...fields }) {}
