@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
+
 // GET /api/health
 router.get('/health', async (req, res, next) => {
+    res.send({  
+        message:"Healthy"
+    })
 });
 
 // ROUTER: /api/users
