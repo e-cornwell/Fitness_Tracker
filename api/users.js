@@ -79,11 +79,17 @@ usersRouter.get('/:username/routines', async (req, res, next) => {
     const { username } = req.params;
     const publicRoutines = await getPublicRoutinesByUser({username})
     const allRoutines = await getAllRoutinesByUser({username})
-    console.log(publicRoutines)
-    console.log(allRoutines)
+    //console.log(req.params)
+    //console.log(publicRoutines)
+    //console.log(allRoutines)
     try {
 
-        res.send(publicRoutines)
+        if(username){
+            res.send(allRoutines)
+        } else {
+            res.send(publicRoutines)
+        }
+        
 
     } catch (error) {
         console.log(error);
