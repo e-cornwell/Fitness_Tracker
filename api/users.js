@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-catch */
 const express = require("express");
 const usersRouter = express.Router();
-const { getUserByUsername, createUser, getUser, getPublicRoutinesByUser } = require('../db')
+const { getUserByUsername, createUser, getUser, getPublicRoutinesByUser, getRoutineActivitiesByRoutine } = require('../db')
 const jwt = require('jsonwebtoken');
 // POST /api/users/register
 usersRouter.post('/register', async (req, res, next) => {
@@ -77,12 +77,11 @@ usersRouter.post('/login', async (req, res, next) => {
 
 usersRouter.get('/:username/routines', async (req, res, next) => {
     const { username } = req.params;
-    const routines = await getPublicRoutinesByUser(username)
+    const routines = await getPublicRoutinesByUser({username})
     
     try {
-        res.send([{
-            routines: 'routines.activities'
-        }])
+        
+        res.send(routines)
     } catch (error) {
         console.log(error);
     }
