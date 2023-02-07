@@ -3,7 +3,6 @@ const express = require("express");
 const usersRouter = express.Router();
 const { getUserByUsername, createUser } = require('../db')
 const jwt = require('jsonwebtoken');
-
 // POST /api/users/register
 usersRouter.post('/register', async (req, res, next) => {
     try {
@@ -37,7 +36,32 @@ usersRouter.post('/register', async (req, res, next) => {
     }
 });
 
-// POST /api/users/login
+usersRouter.post('/login', async (req, res, next) => {
+    try {
+        const { username, password } = req.body;
+        const user = await createUser({username, password});
+
+        if (!username || !password) {
+            res.send({
+                error: "text",
+                name: "text",
+                message: "text"
+            });
+        } else if (user) {
+            const token = jwt.sign({ id: user.id, username: user.username}, process.env.JWT_SECRET);
+            res.send({ user, message: "you're logged in!", token });
+        } else {
+            res.send({
+                error: "text",
+                name: "text",
+                message: "text"
+            });
+        }
+
+    } catch (error) {
+       throw error;
+    }
+});
 
 // GET /api/users/me
 
