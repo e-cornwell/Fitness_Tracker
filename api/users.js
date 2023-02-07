@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-catch */
 const express = require("express");
 const usersRouter = express.Router();
-const { getUserByUsername, createUser } = require('../db')
+const { getUserByUsername, createUser, getUser } = require('../db')
 const jwt = require('jsonwebtoken');
 // POST /api/users/register
 usersRouter.post('/register', async (req, res, next) => {
@@ -37,24 +37,32 @@ usersRouter.post('/register', async (req, res, next) => {
 });
 
 usersRouter.post('/login', async (req, res, next) => {
-    try {
-        const { username, password } = req.body;
-        const user = await createUser({username, password});
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+        next({
+            name: "userPassIncorrect",
+            message: "Username or Password is incorrect"
+        });  
+    }
 
-        if (!username || !password) {
+    try {
+        const user = await getUser({username, password});
+        const User = await getUserByUsername(username)
+
+        
+        if (user) {
+            const token = jwt.sign({ id: User.id, username}, process.env.JWT_SECRET);
+
             res.send({
-                error: "text",
-                name: "text",
-                message: "text"
+                user: {id: User.id, username},
+                message: "you're logged in!",
+                token
             });
-        } else if (user) {
-            const token = jwt.sign({ id: user.id, username: user.username}, process.env.JWT_SECRET);
-            res.send({ user, message: "you're logged in!", token });
         } else {
             res.send({
-                error: "text",
-                name: "text",
-                message: "text"
+                name: 'IncorrectCredentialsError',
+                message: 'Username or password is incorrect'
             });
         }
 
