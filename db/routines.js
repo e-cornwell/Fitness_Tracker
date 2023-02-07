@@ -102,6 +102,7 @@ async function getPublicRoutinesByUser({ username }) {
     `, [username])
     let routines = attachActivitiesToRoutines(rows);
     routines = Object.values(routines);
+    //console.log(routines)
     return routines;
   } catch (error) {
     throw error;

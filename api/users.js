@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-catch */
 const express = require("express");
 const usersRouter = express.Router();
-const { getUserByUsername, createUser, getUser } = require('../db')
+const { getUserByUsername, createUser, getUser, getPublicRoutinesByUser } = require('../db')
 const jwt = require('jsonwebtoken');
 // POST /api/users/register
 usersRouter.post('/register', async (req, res, next) => {
@@ -47,9 +47,8 @@ usersRouter.post('/login', async (req, res, next) => {
     }
 
     try {
-        const user = await getUser({username, password});
-        const User = await getUserByUsername(username)
-
+        const user = await getUser({username, password}); //To get username and password but does not return id
+        const User = await getUserByUsername(username) //To grab id
         
         if (user) {
             const token = jwt.sign({ id: User.id, username}, process.env.JWT_SECRET);
@@ -73,6 +72,21 @@ usersRouter.post('/login', async (req, res, next) => {
 
 // GET /api/users/me
 
+
 // GET /api/users/:username/routines
+
+usersRouter.get('/:username/routines', async (req, res, next) => {
+    const { username } = req.params;
+    const routines = await getPublicRoutinesByUser(username)
+    
+    try {
+        res.send([{
+            routines: 'routines.activities'
+        }])
+    } catch (error) {
+        console.log(error);
+    }
+    
+})
 
 module.exports = usersRouter;
