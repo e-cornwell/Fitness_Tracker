@@ -1,6 +1,6 @@
 const express = require('express');
 const routinesRouter = express.Router();
-const { createRoutine, getAllPublicRoutines } = require('../db')
+const { createRoutine, getAllPublicRoutines, getUserById, getRoutineById, updateRoutine } = require('../db')
 const jwt = require('jsonwebtoken');
 
 // GET /api/routines
@@ -44,6 +44,24 @@ routinesRouter.post('/', async(req, res, next) => {
 });
 
 // PATCH /api/routines/:routineId
+
+routinesRouter.patch('/:routineId', async(req, res, next) => {
+
+    const { routineId } = req.params;
+    const { isPublic, name, goal } = req.body;
+    const getRoutine = await getRoutineById(routineId);
+    const update = await updateRoutine({id: routineId, isPublic, name, goal })
+    try {
+
+        if(update) {
+            res.send(update);
+        }
+        
+    } catch (error) {
+        throw error
+    }
+
+});
 
 // DELETE /api/routines/:routineId
 
