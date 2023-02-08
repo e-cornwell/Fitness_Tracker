@@ -72,6 +72,27 @@ usersRouter.post('/login', async (req, res, next) => {
 
 // GET /api/users/me
 
+usersRouter.get('/me', async(req, res, next) => {
+    const token = req.header("Authorization").slice(7);
+    const tokenVerify = jwt.verify(token, process.env.JWT_SECRET);
+    const username = tokenVerify.username
+    const user = await getUserByUsername(username)
+
+    console.log(user)
+
+    try {
+        if(username === tokenVerify.username){
+            res.send(user)
+        } else{
+            res.send({
+                name: "ErrorMsg",
+                msg: "Invalid Token"
+            })
+        }
+    } catch (error) {
+        throw error;
+    }
+});
 
 // GET /api/users/:username/routines
 
@@ -92,9 +113,6 @@ usersRouter.get('/:username/routines', async (req, res, next) => {
     } catch (error) {
        throw error; 
     }
-
-
-    
 });
 
 
