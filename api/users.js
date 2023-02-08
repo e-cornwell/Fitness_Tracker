@@ -73,22 +73,24 @@ usersRouter.post('/login', async (req, res, next) => {
 // GET /api/users/me
 
 usersRouter.get('/me', async(req, res, next) => {
-    const token = req.header("Authorization").slice(7);
-    const tokenVerify = jwt.verify(token, process.env.JWT_SECRET);
-    const username = tokenVerify.username
-    const user = await getUserByUsername(username)
-
-    console.log(user)
 
     try {
-        if(username === tokenVerify.username){
+        const auth = req.header("Authorization")
+        if(!auth){
+            res.status(401).send({error:'Access denied. No token provided.', 
+            message: 'You must be logged in to perform this action', 
+            name: 'AuthError'
+        });
+        } else {
+            const token = auth.slice(7);
+            const tokenVerify = jwt.verify(token, process.env.JWT_SECRET);
+            const username = tokenVerify.username
+            const user = await getUserByUsername(username)
+
+        if(token){
             res.send(user)
-        } else{
-            res.send({
-                name: "ErrorMsg",
-                msg: "Invalid Token"
-            })
         }
+    }
     } catch (error) {
         throw error;
     }
