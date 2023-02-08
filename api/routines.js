@@ -21,9 +21,9 @@ routinesRouter.post('/', async(req, res, next) => {
     try {
         if(!auth) {
             res.send({
-                error: "An Error Message",
+                error: "Error",
                 message: "You must be logged in to perform this action",
-                name: "Name"
+                name: "Error"
             });
         } else {
             const token = auth.slice(7);
@@ -46,21 +46,37 @@ routinesRouter.post('/', async(req, res, next) => {
 // PATCH /api/routines/:routineId
 
 routinesRouter.patch('/:routineId', async(req, res, next) => {
-
-    const { routineId } = req.params;
     const { isPublic, name, goal } = req.body;
-    const getRoutine = await getRoutineById(routineId);
-    const update = await updateRoutine({id: routineId, isPublic, name, goal })
-    try {
+    const { routineId } = req.params;
+    const auth = req.header("Authorization");
 
-        if(update) {
-            res.send(update);
-        }
+    if(!auth) {
+        res.send({
+            error: "Error",
+            message: "You must be logged in to perform this action",
+            name: "Error"
+        });
+    } else if(auth) {
+        const token = auth.slice(7);
+        try {
+            const { id, username } = jwt.verify(token, process.env.JWT_SECRET);
+            let getRoutine = await getRoutineById(routineId);
+
+            if(id === getRoutine.creatorId) {
+                getRoutine = await updateRoutine({id: routineId, isPublic, name, goal});
+                res.send(getRoutine);
+            } else {
+                res.status(403).send({
+                    error: "Error",
+                    message: `User ${username} is not allowed to update Every day`,
+                    name: "Error"
+                })
+            }
         
-    } catch (error) {
-        throw error
+            } catch (error) {
+                throw error;
+            }
     }
-
 });
 
 // DELETE /api/routines/:routineId

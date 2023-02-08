@@ -13,16 +13,16 @@ usersRouter.post('/register', async (req, res, next) => {
         
         if (_user) {
             res.send({
-                error: "An Error Message",
-                name: "UserAlreadyExistError",
+                error: "Error",
+                name: "Error",
                 message: `User ${username} is already taken.`
                 //ARE YOU KIDDING ME!!!! VERY CLEVER FULLSTACK!^
             });
 
         } else if (password.length < 8){
             res.send({
-                error: "An Error Message",
-                name: "PasswordMustBeGreaterThenEightCharacters",
+                error: "Error",
+                name: "Error",
                 message: "Password Too Short!"
             });
         } else {
@@ -41,7 +41,7 @@ usersRouter.post('/login', async (req, res, next) => {
     
     if (!username || !password) {
         next({
-            name: "userPassIncorrect",
+            name: "Error",
             message: "Username or Password is incorrect"
         });  
     }
@@ -60,7 +60,7 @@ usersRouter.post('/login', async (req, res, next) => {
             });
         } else {
             res.send({
-                name: 'IncorrectCredentialsError',
+                name: 'Error',
                 message: 'Username or password is incorrect'
             });
         }
@@ -79,7 +79,7 @@ usersRouter.get('/me', async(req, res, next) => {
         if(!auth){
             res.status(401).send({error:'Access denied. No token provided.', 
             message: 'You must be logged in to perform this action', 
-            name: 'AuthError'
+            name: 'Error'
         });
         } else {
             const token = auth.slice(7);
