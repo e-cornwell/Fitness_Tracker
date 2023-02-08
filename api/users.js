@@ -78,15 +78,14 @@ usersRouter.post('/login', async (req, res, next) => {
 usersRouter.get('/:username/routines', async (req, res, next) => {
     const { username } = req.params;
     const token = req.header("Authorization").slice(7);
-
+    const tokenVerify = jwt.verify(token, process.env.JWT_SECRET);
+    const allRoutines = await getAllRoutinesByUser({username});
+    const publicRoutines = await getPublicRoutinesByUser({username});
+    
     try {
-        const tokenVerify = jwt.verify(token, process.env.JWT_SECRET);
-
         if(username === tokenVerify.username) {
-            const allRoutines = await getAllRoutinesByUser({username});
             res.send(allRoutines);
         } else {
-            const publicRoutines = await getPublicRoutinesByUser({username});
             res.send(publicRoutines);
         }
 
