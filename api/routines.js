@@ -1,6 +1,6 @@
 const express = require('express');
 const routinesRouter = express.Router();
-const { createRoutine, getAllPublicRoutines, getUserById, getRoutineById, updateRoutine, destroyRoutine } = require('../db')
+const { addActivityToRoutine, createRoutine, getAllPublicRoutines, getUserById, getRoutineById, updateRoutine, destroyRoutine } = require('../db')
 const jwt = require('jsonwebtoken');
 
 // GET /api/routines
@@ -114,5 +114,27 @@ routinesRouter.delete('/:routineId', async (req, res, next) => {
 });
 
 // POST /api/routines/:routineId/activities
+
+routinesRouter.post('/:routineId/activities', async (req, res, next) => {
+    const { activityId, count, duration } = req.body;
+    const { routineId } = req.params;
+    const addActivity = await addActivityToRoutine({ routineId, activityId, count, duration });
+    
+    if (addActivity) {
+        res.send(addActivity);
+    } else {
+        try {
+                res.send({
+                    error: "Error",
+                    message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
+                    name: "Error"
+                })
+            
+        } catch (error) {
+            throw error
+        }
+    }
+
+});
 
 module.exports = routinesRouter;
