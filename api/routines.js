@@ -82,25 +82,24 @@ routinesRouter.patch('/:routineId', async(req, res, next) => {
 // DELETE /api/routines/:routineId
 
 routinesRouter.delete('/:routineId', async (req, res, next) => {
-    const { routineId } = req.params;
-    const auth = req.header("Authorization");
+    try {
+        const { routineId } = req.params;
+        const auth = req.header("Authorization");
     
-    if(!auth) {
-        res.send({
-            error: "Error",
-            message: "You must be logged in to perform this action",
-            name: "Error"
-        });
-    } else if(auth) {
-        const token = auth.slice(7);
-        try {
+        if(!auth) {
+            res.send({
+                error: "Error",
+                message: "You must be logged in to perform this action",
+                name: "Error"
+            });
+        } else {
+            const token = auth.slice(7);
             const { id, username } = jwt.verify(token, process.env.JWT_SECRET);
             const getRoutine = await getRoutineById(routineId);
-                        
+                           
             if(id === getRoutine.creatorId) {
-                const killRoutine = await destroyRoutine(routineId);
-                console.log(routineId)
-                //res.send(killRoutine);
+                await destroyRoutine(getRoutine.id);
+                res.send(getRoutine);
             } else {
                 res.status(403).send({
                     error: "Error",
@@ -108,10 +107,9 @@ routinesRouter.delete('/:routineId', async (req, res, next) => {
                     name: "Error"
                 })
             }
-        
-            } catch (error) {
-                throw error;
-            }
+        }    
+    } catch (error) {
+        throw error;
     }
 });
 

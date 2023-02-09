@@ -144,17 +144,19 @@ async function updateRoutine({ id, ...fields }) {
 
 async function destroyRoutine(id) {
   try {
-    const { rows: routineActivities } = await client.query(`
+    //don't need a variable for this one. We're just deleting it.
+    await client.query(`
       DELETE FROM routine_activities
-      WHERE "routineId" = ${id}
-    `)
-    
+      WHERE "routineId" = $1
+    `, [id])
+    //Need variable to return the routine only
     const { rows: [routine] } = await client.query(`
       DELETE FROM routines
       WHERE id = $1
     `, [id])
     
-    return routine, routineActivities
+    return {routine}
+
   } catch (error) {
     throw(error)
   }
