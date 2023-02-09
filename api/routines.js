@@ -1,6 +1,6 @@
 const express = require('express');
 const routinesRouter = express.Router();
-const { createRoutine, getAllPublicRoutines, getUserById, getRoutineById, updateRoutine } = require('../db')
+const { createRoutine, getAllPublicRoutines, getUserById, getRoutineById, updateRoutine, destroyRoutine } = require('../db')
 const jwt = require('jsonwebtoken');
 
 // GET /api/routines
@@ -80,6 +80,40 @@ routinesRouter.patch('/:routineId', async(req, res, next) => {
 });
 
 // DELETE /api/routines/:routineId
+
+routinesRouter.delete('/:routineId', async (req, res, next) => {
+    const { routineId } = req.params;
+    const auth = req.header("Authorization");
+    
+    if(!auth) {
+        res.send({
+            error: "Error",
+            message: "You must be logged in to perform this action",
+            name: "Error"
+        });
+    } else if(auth) {
+        const token = auth.slice(7);
+        try {
+            const { id, username } = jwt.verify(token, process.env.JWT_SECRET);
+            const getRoutine = await getRoutineById(routineId);
+                        
+            if(id === getRoutine.creatorId) {
+                const killRoutine = await destroyRoutine(routineId);
+                console.log(routineId)
+                //res.send(killRoutine);
+            } else {
+                res.status(403).send({
+                    error: "Error",
+                    message: `User ${username} is not allowed to delete On even days`,
+                    name: "Error"
+                })
+            }
+        
+            } catch (error) {
+                throw error;
+            }
+    }
+});
 
 // POST /api/routines/:routineId/activities
 
