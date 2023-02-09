@@ -16,7 +16,7 @@ async function addActivityToRoutine({
     const [routineActivity] = rows;
     return routineActivity;
   } catch (error) {
-    throw error
+    console.error(error);
   }
 }
 
@@ -29,7 +29,7 @@ async function getRoutineActivityById(id) {
     `)
     return routineActivity;
   } catch (error) {
-    
+     console.error(error);
   }
 
 }
@@ -44,7 +44,7 @@ async function getRoutineActivitiesByRoutine({ id }) {
 
     return activities;
   } catch (error) {
-    throw error;
+    console.error(error);
   }
 }
 
@@ -64,7 +64,7 @@ async function updateRoutineActivity({ id, ...fields }) {
 
     return routine_activities;
   } catch (error) {
-    throw error;
+    console.error(error);
   }
 }
 
@@ -77,7 +77,7 @@ try {
     `, [id])
   return routineActivity;
 } catch (error) {
-  throw error;
+  console.error(error);
 }
 }
 
@@ -92,7 +92,7 @@ async function canEditRoutineActivity(routineActivityId, userId) {
 
     return editRoutine.creatorId === userId;
   } catch (error) {
-    throw error;
+    console.error(error);
   }
 }
 

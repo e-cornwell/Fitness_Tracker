@@ -112,10 +112,15 @@ describe("DB Routine Activities", () => {
   describe("destroyRoutineActivity(id)", () => {
     it("remove routine_activity from database", async () => {
       const fakeRoutineActivity = await createFakeRoutineActivity();
-
+      //My code v
+      console.log('fake', fakeRoutineActivity.id)
+      //My code ^
       const deletedRoutine = await destroyRoutineActivity(
         fakeRoutineActivity.id
       );
+      //My code v
+      console.log('delete', deletedRoutine.id)
+      //My code ^
       expect(deletedRoutine.id).toBe(fakeRoutineActivity.id);
       const { rows } = await client.query(`
           SELECT * FROM routine_activities

@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { getAllActivities, createActivity } = require("../db");
+const {
+  getAllActivities,
+  createActivity,
+  getActivityByName,
+} = require("../db");
 const jwt = require("jsonwebtoken");
 
 // GET /api/activities
@@ -17,20 +21,29 @@ router.get("/", async (req, res, next) => {
 // POST /api/activities
 
 router.post("/", async (req, res, next) => {
+  const { name, description } = req.body;
+  const auth = req.header("Authorization");
   try {
-    const newActivity = await createActivity(req.body);
-    console.log(newActivity);
-
-    if (newActivity.name !== undefined) {
-      res.send(newActivity);
+    if (!auth) {
+      res.send({
+        error: "Error",
+        message: "You must be logged in to perform this action",
+        name: "Error",
+      });
+    } else {
+      try {
+        const newActivity = await createActivity({ name, description });
+        res.send(newActivity);
+      } catch (error) {
+        res.send({
+          error: "Error",
+          message: `An activity with name ${name} already exists`,
+          name: "Error",
+        })
+      }
     }
-    res.send({
-      error: "Any<String>",
-      message: `An activity with name ${req.body.name} already exists`,
-      name: "Any<String>"
-    });
   } catch (error) {
-    next(error);
+    throw error;
   }
 });
 
