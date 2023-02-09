@@ -3,7 +3,8 @@ const router = express.Router();
 const {
   getAllActivities,
   createActivity,
-  getActivityByName,
+  getActivityById,
+  updateActivity
 } = require("../db");
 const jwt = require("jsonwebtoken");
 
@@ -39,7 +40,7 @@ router.post("/", async (req, res, next) => {
           error: "Error",
           message: `An activity with name ${name} already exists`,
           name: "Error",
-        })
+        });
       }
     }
   } catch (error) {
@@ -48,6 +49,11 @@ router.post("/", async (req, res, next) => {
 });
 
 // PATCH /api/activities/:activityId
+
+router.patch("/:activityId", async (req, res, next) => {
+
+
+});
 
 // GET /api/activities/:activityId/routines
 
