@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { updateRoutineActivity, getRoutineActivityById, destroyRoutineActivity } = require('../db')
+const { updateRoutineActivity, getRoutineActivityById, destroyRoutineActivity, getRoutineById } = require('../db')
 const jwt = require('jsonwebtoken');
 
 // PATCH /api/routine_activities/:routineActivityId
@@ -44,24 +44,29 @@ router.patch('/:routineActivityId', async (req, res, next) => {
 // DELETE /api/routine_activities/:routineActivityId
 
 router.delete('/:routineActivityId', async (req, res, next) => {
-    const { routineActivityId } = req.params;
-    const auth = req.header("Authorization");
+    try {
+        const { routineActivityId } = req.params;
+        const auth = req.header("Authorization");
     
-    if (!auth) {
-        res.send({
-            error: "Error",
-            message: "You must be logged in to perform this action",
-            name: "Error"
-        });
-    } else if (auth) {
-        const token = auth.slice(7);
-        try {
+        if(!auth) {
+            res.send({
+                error: "Error",
+                message: "You must be logged in to perform this action",
+                name: "Error"
+            });
+        } else {
+            const token = auth.slice(7);
             const { id, username } = jwt.verify(token, process.env.JWT_SECRET);
-            let getRoutineActivity = await getRoutineActivityById(routineActivityId);
-            
-            if (id === getRoutineActivity.routineId) {
-                await destroyRoutineActivity(getRoutineActivity.routineId);
-                res.send(getRoutineActivity)
+
+            // const routineId = await getRoutineById();
+            const routineActivity = await getRoutineActivityById(routineActivityId);
+            const routineId = routineActivity.routineId;
+            const getRouteId = await getRoutineById(routineId)
+            console.log(routineActivity, getRouteId)    
+
+            if(id === getRouteId.creatorId) {
+                await destroyRoutineActivity(routineActivity.routineId);
+                res.send(routineActivity);
             } else {
                 res.status(403).send({
                     error: "Error",
@@ -69,10 +74,9 @@ router.delete('/:routineActivityId', async (req, res, next) => {
                     name: "Error"
                 })
             }
-
-        } catch (error) {
-            throw error;
-        }
+        }    
+    } catch (error) {
+        throw error;
     }
 })
 
