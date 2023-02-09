@@ -1,9 +1,18 @@
 const express = require('express');
 const router = express.Router();
-
-// GET /api/activities/:activityId/routines
+const { getAllActivities } = require('../db')
+const jwt = require('jsonwebtoken');
 
 // GET /api/activities
+
+router.get('/', async(req, res, next) => {
+    
+    const activities = await getAllActivities();
+    res.send(activities);
+
+});
+
+// GET /api/activities/:activityId/routines
 
 // POST /api/activities
 

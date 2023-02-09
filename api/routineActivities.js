@@ -61,8 +61,7 @@ router.delete('/:routineActivityId', async (req, res, next) => {
             // const routineId = await getRoutineById();
             const routineActivity = await getRoutineActivityById(routineActivityId);
             const routineId = routineActivity.routineId;
-            const getRouteId = await getRoutineById(routineId)
-            console.log(routineActivity, getRouteId)    
+            const getRouteId = await getRoutineById(routineId)    
 
             if(id === getRouteId.creatorId) {
                 await destroyRoutineActivity(routineActivity.routineId);
