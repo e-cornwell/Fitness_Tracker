@@ -1,9 +1,11 @@
 /* eslint-disable no-useless-catch */
 const express = require("express");
 const usersRouter = express.Router();
-const { getUserByUsername, createUser, getUser, getPublicRoutinesByUser, getAllRoutinesByUser } = require('../db')
 const jwt = require('jsonwebtoken');
+
+const { getUserByUsername, createUser, getUser, getPublicRoutinesByUser, getAllRoutinesByUser } = require('../db')
 const { requireLoggedIn } = require("./utils");
+
 // POST /api/users/register
 usersRouter.post('/register', async (req, res, next) => {
     try {
@@ -74,9 +76,9 @@ usersRouter.get('/me', async(req, res, next) => {
             message: 'You must be logged in to perform this action', 
             name: 'Error'
         });
-        } else {
+        }  else {
             const token = auth.slice(7);
-            const tokenVerify = jwt.verify(token, process.env.JWT_SECRET);
+            const tokenVerify= jwt.verify(token, process.env.JWT_SECRET);
             const username = tokenVerify.username
             const user = await getUserByUsername(username)
 
