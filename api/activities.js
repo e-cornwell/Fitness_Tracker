@@ -51,7 +51,79 @@ router.post("/", async (req, res, next) => {
 // PATCH /api/activities/:activityId
 
 router.patch("/:activityId", async (req, res, next) => {
+  // const { activityId } = req.params;
+  // const { name, description } = req.body;
+  // const activityUpdate = await updateActivity({ id: activityId, name, description });
+  // const getActivity = await getActivityById(activityId);
   
+
+  // if (activityUpdate) {
+  //   res.send(activityUpdate);
+  // } else if (!activityUpdate) {
+  //   res.send({
+  //     error: "Error",
+  //     message: `Activity ${activityId} not found`,
+  //     name: "Error",
+  //   });
+  // } 
+
+  //  const auth = req.header("Authorization");
+    // if (!auth) {
+    //   res.send({
+    //     error: "Error",
+    //     message: "You must be logged in to perform this action",
+    //     name: "Error",
+    //   });
+    // } else {
+    //   try {
+    //     const activityUpdate = await updateActivity({ id: activityId, name, description });
+    //     if(activityUpdate) {
+    //     res.send(activityUpdate);
+    //   } else if(!activityUpdate) {
+    //     res.send({
+    //       error: "Error",
+    //       message: `Activity ${activityId} not found`,
+    //       name: "Error"
+    //     });
+    //   }
+    //   } catch (error) {
+    //     throw error;
+    //   }
+    // } 
+    const { activityId } = req.params;
+    const { name, description } = req.body;
+    const auth = req.header("Authorization");
+    try {
+      if (!auth) {
+        res.send({
+          error: "Error",
+          message: "You must be logged in to perform this action",
+          name: "Error",
+        });
+      } else {
+        try {
+          const activityUpdate = await updateActivity({ id: activityId, name, description });
+          if (!activityUpdate) {
+            res.send({
+                    error: "Error",
+                    message: `Activity ${activityId} not found`,
+                    name: "Error"
+                  });
+          } else {
+            res.send(activityUpdate);
+          }
+        } catch (error) {
+          res.send({
+            error: "Error",
+            message: `An activity with name ${name} already exists`,
+            name: "Error",
+          });
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+
 
 });
 
