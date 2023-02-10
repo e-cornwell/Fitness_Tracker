@@ -1,4 +1,4 @@
-const requireLoggedIn = (req, res, next) => {
+const requireUserPass = (req, res, next) => {
     const { username, password } = req.body;
     if (!username || !password) {
         next({
@@ -10,5 +10,5 @@ const requireLoggedIn = (req, res, next) => {
 }
 
 module.exports = {
-    requireLoggedIn
+    requireUserPass
 };

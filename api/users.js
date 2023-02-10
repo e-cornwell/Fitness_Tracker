@@ -4,7 +4,7 @@ const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
 
 const { getUserByUsername, createUser, getUser, getPublicRoutinesByUser, getAllRoutinesByUser } = require('../db')
-const { requireLoggedIn } = require("./utils");
+const { requireUserPass } = require("./utils");
 
 // POST /api/users/register
 usersRouter.post('/register', async (req, res, next) => {
@@ -39,7 +39,7 @@ usersRouter.post('/register', async (req, res, next) => {
     }
 });
 
-usersRouter.post('/login', requireLoggedIn, async (req, res, next) => {
+usersRouter.post('/login', requireUserPass, async (req, res, next) => {
     try {
         const { username, password } = req.body;
         const user = await getUser({username, password}); //To get username and password but does not return id
