@@ -3,6 +3,7 @@ const express = require("express");
 const usersRouter = express.Router();
 const { getUserByUsername, createUser, getUser, getPublicRoutinesByUser, getAllRoutinesByUser } = require('../db')
 const jwt = require('jsonwebtoken');
+const { requireLoggedIn } = require("./utils");
 // POST /api/users/register
 usersRouter.post('/register', async (req, res, next) => {
     try {
@@ -36,17 +37,9 @@ usersRouter.post('/register', async (req, res, next) => {
     }
 });
 
-usersRouter.post('/login', async (req, res, next) => {
-    const { username, password } = req.body;
-    
-    if (!username || !password) {
-        next({
-            name: "Error",
-            message: "Username or Password is incorrect"
-        });  
-    }
-
+usersRouter.post('/login', requireLoggedIn, async (req, res, next) => {
     try {
+        const { username, password } = req.body;
         const user = await getUser({username, password}); //To get username and password but does not return id
         const User = await getUserByUsername(username) //To grab id
         
