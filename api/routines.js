@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken');
 
 // GET /api/routines
 
-routinesRouter.get('/', async(req, res, next) => {
-    
+routinesRouter.get('/', async (req, res, next) => {
+
     const routines = await getAllPublicRoutines();
     res.send(routines);
 
@@ -14,12 +14,12 @@ routinesRouter.get('/', async(req, res, next) => {
 
 // POST /api/routines
 
-routinesRouter.post('/', async(req, res, next) => {
+routinesRouter.post('/', async (req, res, next) => {
     const { isPublic, name, goal } = req.body;
     const auth = req.header("Authorization");
 
     try {
-        if(!auth) {
+        if (!auth) {
             res.send({
                 error: "Error",
                 message: "You must be logged in to perform this action",
@@ -29,11 +29,12 @@ routinesRouter.post('/', async(req, res, next) => {
             const token = auth.slice(7);
             const user = jwt.verify(token, process.env.JWT_SECRET);
             const creatorId = user.id;
-            const newRoutine = await createRoutine({ 
-                creatorId, 
-                isPublic, 
-                name, 
-                goal });
+            const newRoutine = await createRoutine({
+                creatorId,
+                isPublic,
+                name,
+                goal
+            });
             res.send(newRoutine);
         }
 
@@ -45,25 +46,25 @@ routinesRouter.post('/', async(req, res, next) => {
 
 // PATCH /api/routines/:routineId
 
-routinesRouter.patch('/:routineId', async(req, res, next) => {
+routinesRouter.patch('/:routineId', async (req, res, next) => {
     const { isPublic, name, goal } = req.body;
     const { routineId } = req.params;
     const auth = req.header("Authorization");
 
-    if(!auth) {
+    if (!auth) {
         res.send({
             error: "Error",
             message: "You must be logged in to perform this action",
             name: "Error"
         });
-    } else if(auth) {
+    } else if (auth) {
         const token = auth.slice(7);
         try {
             const { id, username } = jwt.verify(token, process.env.JWT_SECRET);
             let getRoutine = await getRoutineById(routineId);
 
-            if(id === getRoutine.creatorId) {
-                getRoutine = await updateRoutine({id: routineId, isPublic, name, goal});
+            if (id === getRoutine.creatorId) {
+                getRoutine = await updateRoutine({ id: routineId, isPublic, name, goal });
                 res.send(getRoutine);
             } else {
                 res.status(403).send({
@@ -72,10 +73,10 @@ routinesRouter.patch('/:routineId', async(req, res, next) => {
                     name: "Error"
                 })
             }
-        
-            } catch (error) {
-                throw error;
-            }
+
+        } catch (error) {
+            throw error;
+        }
     }
 });
 
@@ -85,8 +86,8 @@ routinesRouter.delete('/:routineId', async (req, res, next) => {
     try {
         const { routineId } = req.params;
         const auth = req.header("Authorization");
-    
-        if(!auth) {
+
+        if (!auth) {
             res.send({
                 error: "Error",
                 message: "You must be logged in to perform this action",
@@ -96,8 +97,8 @@ routinesRouter.delete('/:routineId', async (req, res, next) => {
             const token = auth.slice(7);
             const { id, username } = jwt.verify(token, process.env.JWT_SECRET);
             const getRoutine = await getRoutineById(routineId);
-                           
-            if(id === getRoutine.creatorId) {
+
+            if (id === getRoutine.creatorId) {
                 await destroyRoutine(getRoutine.id);
                 res.send(getRoutine);
             } else {
@@ -107,7 +108,7 @@ routinesRouter.delete('/:routineId', async (req, res, next) => {
                     name: "Error"
                 })
             }
-        }    
+        }
     } catch (error) {
         throw error;
     }
@@ -119,17 +120,16 @@ routinesRouter.post('/:routineId/activities', async (req, res, next) => {
     const { activityId, count, duration } = req.body;
     const { routineId } = req.params;
     const addActivity = await addActivityToRoutine({ routineId, activityId, count, duration });
-    
+
     if (addActivity) {
         res.send(addActivity);
     } else {
         try {
-                res.send({
-                    error: "Error",
-                    message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
-                    name: "Error"
-                })
-            
+            res.send({
+                error: "Error",
+                message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
+                name: "Error"
+            })
         } catch (error) {
             throw error
         }
