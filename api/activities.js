@@ -93,21 +93,23 @@ router.get("/:activityId/routines", async (req, res, next) => {
   const { activityId } = req.params;
   const publicRoutines = await getPublicRoutinesByActivity({id: activityId});
   
-  // console.log(publicRoutines);
-  // console.log(activityId);
-  // console.log(publicRoutines[0].activities[0].id);
-  console.log(publicRoutines[0].activities[0]);
+  console.log(publicRoutines);
+  console.log(activityId);
   
-
+  
   try {
-    if (!publicRoutines[0].activities[0]) {
+    if (!publicRoutines.length) {
       res.send({
         error: "Error",
         message: `Activity ${activityId} not found`,
         name: "Error"
       });
     } else {
-      res.send(publicRoutines);
+      try {
+        res.send(publicRoutines);
+      } catch (error) {
+        console.log(error)
+      }
     }
   } catch (error) {
     throw error
