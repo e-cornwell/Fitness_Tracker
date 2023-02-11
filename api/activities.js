@@ -93,10 +93,6 @@ router.get("/:activityId/routines", async (req, res, next) => {
   const { activityId } = req.params;
   const publicRoutines = await getPublicRoutinesByActivity({id: activityId});
   
-  console.log(publicRoutines);
-  console.log(activityId);
-  
-  
   try {
     if (!publicRoutines.length) {
       res.send({
@@ -108,11 +104,11 @@ router.get("/:activityId/routines", async (req, res, next) => {
       try {
         res.send(publicRoutines);
       } catch (error) {
-        console.log(error)
+        throw error;
       }
     }
   } catch (error) {
-    throw error
+    throw error;
   } 
 });
 

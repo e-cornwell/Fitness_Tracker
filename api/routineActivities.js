@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { updateRoutineActivity, getRoutineActivityById, destroyRoutineActivity, getRoutineById } = require('../db')
+const { updateRoutineActivity, getRoutineActivityById, destroyRoutineActivity, getRoutineById, canEditRoutineActivity } = require('../db')
 const jwt = require('jsonwebtoken');
 
 // PATCH /api/routine_activities/:routineActivityId
 
 router.patch('/:routineActivityId', async (req, res, next) => {
-
     const { count, duration } = req.body;
     const { routineActivityId } = req.params;
     const auth = req.header("Authorization");
@@ -22,8 +21,8 @@ router.patch('/:routineActivityId', async (req, res, next) => {
         try {
             const { id, username } = jwt.verify(token, process.env.JWT_SECRET);
             let getRoutine = await getRoutineActivityById(routineActivityId);
-            
-            if (id === getRoutine.id) {
+            const canEdit = await canEditRoutineActivity(routineActivityId, id)
+            if (canEdit) {
                 getRoutine = await updateRoutineActivity({ id: routineActivityId, count, duration });
                 res.send(getRoutine);
             } else {
